@@ -1,0 +1,12 @@
+- name: php-ini change
+  lineinfile:
+    path: /etc/php/7.4/fpm/php.ini
+    search_string: "upload_max_filesize"
+    line: "upload_max_filesize = 100M"
+    state: present
+- name: php-ini change2
+  lineinfile:
+    path: /etc/php/7.4/fpm/php.ini
+    search_string: "memory_limit"
+    line: "memory_limit = 256M"
+    state: present

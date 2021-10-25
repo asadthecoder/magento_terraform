@@ -1,0 +1,6 @@
+---
+# handlers file for nginx_php
+- name: restart nginx
+  service: name=nginx state=restarted
+- name: nginx_start
+  service: name=nginx state=started

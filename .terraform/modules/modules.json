@@ -1,0 +1,1 @@
+{"Modules":[{"Key":"launch_template","Source":"./modules/launch_template","Dir":"modules/launch_template"},{"Key":"","Source":"","Dir":"."},{"Key":"vpc","Source":"./modules/vpc","Dir":"modules/vpc"},{"Key":"VPC","Source":"./modules/vpc","Dir":"modules/vpc"}]}

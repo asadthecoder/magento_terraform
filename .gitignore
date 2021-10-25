@@ -1,0 +1,5 @@
+terraform.tfstate
+terraform.tfstate.backup
+.terraform/providers/
+modules/vpc/.terraform/
+modules/launch_template/.terraform/

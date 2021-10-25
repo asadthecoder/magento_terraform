@@ -1,0 +1,39 @@
+
+- 
+  name: varnish_server_setup
+  hosts: [varnish_asg]
+  become: True
+  vars:
+  tasks:
+    - name: varnish install
+      apt:
+        name: varnish
+        state: present
+    - name: vcl push
+      copy: src=varnish.vcl dest=/etc/varnish/default.vcl
+    - name: vcl_update
+      become: True
+      shell: sed -e '/.probe/,+6d' /etc/varnish/default.vcl > /etc/varnish/default1.vcl 
+    - name: file op
+      command: mv /etc/varnish/default1.vcl /etc/varnish/default.vcl
+    - name: varnish config change
+      lineinfile:
+        path: /etc/default/varnish
+        regexp: '^DAEMON_OPTS(.*)$'
+        line: DAEMON_OPTS="-a :80 \
+    - name: change varnish daemon
+      lineinfile:
+        path: /lib/systemd/system/varnish.service
+        regexp: '^ExecStart=/usr/sbin/varnishd(.*)$'
+        line: ExecStart=/usr/sbin/varnishd -j unix,user=vcache -F -a :80 -T localhost:6082 -f /etc/varnish/default.vcl -S /etc/varnish/secret -s malloc,256m
+    - name: daemon-reload
+      systemd:
+        name: varnish
+        state: restarted
+        daemon_reload: yes
+        
+    - name: varnish restart
+      service:
+        name: varnish
+        state: restarted
+

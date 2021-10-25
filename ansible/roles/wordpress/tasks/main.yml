@@ -1,0 +1,4 @@
+---
+# tasks file for /etc/ansible/roles/wordpress
+- import_tasks: wp.yml
+- import_tasks: wp-config.yml

@@ -1,0 +1,69 @@
+---
+# tasks file for magento
+  - name: install
+    apt:
+      name: git
+      state: present
+  - name: Download composer installer
+    get_url:
+      url: https://getcomposer.org/installer
+      dest: /tmp/composer-installer
+      mode: 0755
+
+  - name: Install composer using PHP
+    shell: php composer-installer
+    args:
+      chdir: /tmp/
+
+  - name: Move composer file to /user/local/bin
+    shell: mv composer.phar /usr/local/bin/composer
+    args:
+      chdir: /tmp/
+
+  - name: Create symbolic link
+    file:
+      src: /usr/local/bin/composer
+      dest: /usr/bin/composer
+      owner: root
+      group: root
+      state: link
+  - name: Magento repo config
+    become: true
+    become_user: www-data
+    command: chdir=/var/www/ composer global config http-basic.repo.magento.com "{{ repo_api_key }}" "{{ repo_secret_key }}"
+  - name: remove folder if exists
+    file:
+      path: /var/www/magento
+      state: absent
+  - name: Create the Magento project using composer
+    become: true
+    become_user: www-data
+    command: chdir=/var/www/ composer create-project --repository=https://repo.magento.com/ magento/project-community-edition /var/www/magento 
+  - name: Magento Setup
+    become: true
+    become_user: www-data
+    environment:
+      url_name: "{{lookup('env', 'domain')}}"
+    register: domain1
+    command: chdir=/var/www/magento bin/magento setup:install --base-url=https://$url_name --db-host=localhost --db-name=magento-db --db-user=magento --db-password=magento --admin-firstname=Magento --admin-lastname=User --admin-email=user@example.com --admin-user=admin --admin-password=admin123 --language=en_US --currency=USD --timezone=America/Chicago --use-rewrites=1 --search-engine=elasticsearch7 --elasticsearch-host=localhost --elasticsearch-port=9200
+ # - name: Lookup
+ #   debug: msg="{{domain1.stdout}}"
+  - name: Reload NGINX
+    service:
+      name: nginx
+      state: restarted
+  - name: hostname
+    command: hostname -f
+    register: hostname
+  - name: set-fact
+    set_fact:
+      actual_hostname: "{{ hostname.stdout }}"
+  - name: Varnish Export file
+    become: true
+    become_user: www-data
+    register: vcl
+    command: chdir=/var/www/magento bin/magento varnish:vcl:generate --backend-port=80 --backend-host={{actual_hostname}} --export-version=6 --output-file varnish.vcl
+  - name: VCL Out
+    debug: msg="{{vcl.stdout}}"
+  - name: pull VCL
+    fetch: src=/var/www/magento/varnish.vcl dest=varnish.vcl flat=yes

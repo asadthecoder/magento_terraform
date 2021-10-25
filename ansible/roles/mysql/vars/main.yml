@@ -1,0 +1,5 @@
+---
+# vars file for /etc/ansible/roles/mysql
+db-name: wordpress
+db-user: wordpressuser
+db-password: wordpress

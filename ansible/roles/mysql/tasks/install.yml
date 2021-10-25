@@ -1,0 +1,31 @@
+
+- name: install packages
+  apt: "name={{ item }} state=present"
+  with_items:
+    - mysql-server
+    - mysql-client
+    - python3-dev
+    - python3-pip
+    - python3-mysqldb
+    - libmysqlclient-dev
+- name: set python3 as default
+  command: "update-alternatives --install /usr/bin/python python /usr/bin/python3 1"
+- name: pip modules for mysql
+  pip:
+    name: PyMySQL
+- name: db setup
+#  vars:
+#    db_name: wordpress-db
+  become: True
+  mysql_db:
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    name: "{{ db_name }}"
+    state: present
+- name: db-user
+  become: True
+  mysql_user: 
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    name: "{{ db_user }}" 
+    password: "{{ db_password }}" 
+    priv: "*.*:ALL"
+    state: present

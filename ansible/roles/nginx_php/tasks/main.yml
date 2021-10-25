@@ -1,0 +1,6 @@
+---
+# tasks file for nginx_php
+- import_tasks: install.yml
+- import_tasks: config.yml
+- import_tasks: php-set.yml
+- import_tasks: elasticsearch.yml

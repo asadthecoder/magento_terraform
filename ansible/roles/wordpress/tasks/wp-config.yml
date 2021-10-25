@@ -1,0 +1,18 @@
+  - name: wordpress-config
+    lineinfile:
+      path: /var/www/html/wordpress/wp-config.php
+      regexp: "^define\\( \\'DB_NAME.*$"
+      line: "define ('DB_NAME', 'wordpress-db');"
+      state: present
+  - name: wordpress-config-user
+    lineinfile:
+      path: /var/www/html/wordpress/wp-config.php
+      regexp: "^define\\( \\'DB_USER.*$"
+      line: "define ('DB_USER', 'wordpress');"
+      state: present
+  - name: wordpress-config-pass
+    lineinfile:
+      path: /var/www/html/wordpress/wp-config.php
+      regexp: "^define\\( \\'DB_PASSWORD.*$"
+      line: "define ('DB_PASSWORD', 'wordpress');"
+      state: present

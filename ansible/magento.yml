@@ -1,0 +1,14 @@
+- 
+  name: magento_server_setup
+  hosts: [magento_asg]
+  become: True
+  vars:
+  roles:
+    - nginx_php
+    - role: mysql
+      db_name: magento-db
+      db_user: magento
+      db_password: magento
+    - role: magento
+      repo_api_key: "3efc716fe437d972840fd3f5b19b497f"
+      repo_secret_key: "cb4b4dd70ec1b191f9d5760e3e38cc6c"

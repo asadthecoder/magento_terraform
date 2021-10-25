@@ -1,0 +1,20 @@
+-
+  name: elastic-search-repo
+  apt_key:
+    url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    state: present
+- name: apt-repo
+  apt_repository:
+    repo: deb https://artifacts.elastic.co/packages/7.x/apt stable main
+    state: present
+- name: install-es-7
+  apt:
+    name: elasticsearch
+    state: present 
+    update_cache: true
+  notify:
+    - restart nginx
+- name: start ES
+  service: name=elasticsearch state=started
+
+    

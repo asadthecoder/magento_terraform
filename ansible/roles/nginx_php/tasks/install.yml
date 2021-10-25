@@ -1,0 +1,36 @@
+-  
+  name: repo
+  ansible.builtin.apt_repository:
+    repo: ppa:ondrej/php
+- name: nginx_installation
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items: 
+        - nginx
+        - mysql-server
+        - php7.4
+        - php7.4-fpm
+        - php7.4-mysql
+        - php7.4-common 
+        - php7.4-gmp 
+        - php7.4-curl 
+        - php7.4-intl 
+        - php7.4-mbstring 
+        - php7.4-xmlrpc 
+        - php7.4-gd 
+        - php7.4-xml 
+        - php7.4-cli 
+        - php7.4-zip 
+        - php7.4-soap 
+        - php7.4-bcmath
+        - unzip
+  notify:
+    - nginx_start
+- name: apache uninstall
+  apt:
+    name: apache2
+    state: absent
+- name: file-permissions
+  file: dest=/var/www owner=www-data group=www-data mode=u=rwX,g=rX,o=rX recurse=yes
+    

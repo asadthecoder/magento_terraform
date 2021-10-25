@@ -1,0 +1,35 @@
+
+- 
+  name: hostname
+  hosts: [varnish_asg]
+  tasks:
+    - name: hostname
+      command: hostname -f
+      register: varnish
+    - name: new host
+      add_host:
+        name: "dummy"
+        var_hostname: "{{varnish.stdout}}"
+
+- name: nginx_proxy_pass
+  hosts: [magento_asg]
+  become: True
+  become_user: www-data
+  vars:
+  tasks:
+    - name: proxy
+      lineinfile:
+        path: /var/www/magento/nginx.conf.sample
+        insertafter: "^location \/ {"
+        line: proxy_pass http://{{hostvars['dummy']['var_hostname']}};\n proxy_set_header X-Real-IP  $remote_addr;\n proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; \n proxy_set_header Host $host; 
+        state: present
+      check_mode: true
+- name: restart nginx
+  hosts: [magento_asg]
+  become: True
+  tasks:
+    - name: nginx_restart
+      service:
+        name: nginx
+        state: restarted
+

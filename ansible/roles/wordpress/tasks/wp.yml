@@ -1,0 +1,23 @@
+  - name: download-wp
+    get_url:
+      url: https://wordpress.org/latest.tar.gz
+      dest: /tmp/latest.tar.gz
+  - name: extract
+    unarchive:
+      src: /tmp/latest.tar.gz
+      dest: /var/www/html/
+      remote_src: yes
+  - name: check wp-location
+    shell: ls /var/www/html/wordpress && echo present || echo absent
+    register: wp_location
+    changed_when: false
+  - name: wordpress-perm
+    file:
+      path: /var/www/html
+      owner: root
+      group: root
+  - name: wp-config
+    copy:
+      src: /var/www/html/wordpress/wp-config-sample.php
+      dest: /var/www/html/wordpress/wp-config.php
+      remote_src: yes
