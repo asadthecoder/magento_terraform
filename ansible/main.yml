@@ -1,0 +1,3 @@
+---
+- import_playbook: magento.yml
+- import_playbook: varnish.yml
